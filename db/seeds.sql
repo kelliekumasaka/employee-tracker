@@ -1,87 +1,76 @@
 USE company_db;
 
-INSERT INTO department(id, name) VALUES
+INSERT INTO department(name) VALUES
 (
-    1, "sales"
+    "sales"
 ),
 (
-    2, "customer service"
+    "customer service"
 ),
 (   
-    3, "legal"
+    "legal"
 ),
 (    
-    4, "system operations"
+    "system operations"
 ),
 (
-    5, "HR"
+    "HR"
 ),
 (
-    6, "marketing"
+    "marketing"
 ); 
 
-INSERT INTO role(title, salary, id, department_id) VALUES
+INSERT INTO role(title, salary, department_id) VALUES
 (
     "sales associate",
     58000,
-    1,
     1
 ),
 (
     "sales manager",
     70000,
-    2,
     1
 ),
 (
     "marketing representative",
     58000,
-    3,
     6
 ),
 (
     "digital marketing specialist",
     60000,
-    4,
     6
 ),
 (
     "customer service representative",
     55000,
-    5,
     2
 ),
 (
     "claims intake representative",
     68000,
-    6,
     3
 ),
 (
     "junior legal specialist",
     85000,
-    7,
     3
 ),
 (
     "senior lawyer",
     120000,
-    8,
     3
 ),
 (
     "front-end web developer",
     80000,
-    9,
     4
 ),
 (
     "HR representative",
     60000,
-    10,
     5
-)
-;
+);
 
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES

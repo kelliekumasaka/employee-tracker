@@ -3,12 +3,12 @@ CREATE DATABASE company_db;
 USE company_db;
 
 CREATE TABLE department (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE role (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(50) NOT NULL,
     salary DECIMAL(7) NOT NULL,
     department_id INT, 

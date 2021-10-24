@@ -22,7 +22,7 @@ const main = () => {
         choices: ['View all departments', 'View all roles', 'View all employees', 'Add an employee', 'Add a department', 'Add a role', 'Update an employee', 'Quit']
     }).then((data => {
         if(data.options === 'View all departments'){
-            db.query('SELECT * FROM department', (err, data) => {
+            db.query('SELECT id, name FROM department', (err, data) => {
                 if (err) {
                   throw err;
                 }else {
@@ -73,7 +73,7 @@ const main = () => {
                         message:'Choose a role',
                         name:'role',
                         choices:roles
-                    }).then((data => {
+                    }).then(data => {
                         var roleId = data.role;
                         // INSERT INTO employee 
                         findEmployees().then(([columns]) => {
@@ -87,7 +87,6 @@ const main = () => {
                                 name:`${row.first_name} ${row.last_name}`,
                                 id:row.id
                             }))
-                            console.log(allManagers);
                             inquirer.prompt({
                                 type:'list',
                                 message:'Choose a manager to assign to',
@@ -101,10 +100,19 @@ const main = () => {
                                 main();
                             });
                         })
-                    }))
+                    })
                 });
+            }) 
+        } else if(data.choices === "Add a department"){
+            inquirer.prompt([
+                {
+                    type:'input',
+                    name:'department',
+                    message:'Insert name of new department'
+                }
+            ]).then(data => {
+                db.query('INSERT INTO department ')
             })
-            
         }
         else{
             console.log('Goodbye!');
