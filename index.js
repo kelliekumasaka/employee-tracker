@@ -29,7 +29,7 @@ const main = () => {
                 }
             })
         }else if(data.options === 'View all roles'){
-            db.query('SELECT role.id AS id, title, name AS department, salary FROM role LEFT JOIN department ON role.department_id = department.id', (err, data) => {
+            db.query('SELECT role.id, title, name AS department, salary FROM role LEFT JOIN department ON role.department_id = department.id', (err, data) => {
                 if(err){
                     throw err;
                 }else{
@@ -37,8 +37,8 @@ const main = () => {
                     main();
                 }
             })
-        }else if (data.options === 'View all employees'){
-            db.query('SELECT * FROM employee', (err, data) => {
+        }else if(data.options === 'View all employees'){
+            db.query('SELECT e.id, e.first_name, e.last_name, title, name AS department, salary, concat(m.first_name, " ", m.last_name) AS manager FROM employee e JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee m ON m.id = e.manager_id', (err, data) => {
                 if(err){
                     throw err;
                 }else{
@@ -46,7 +46,7 @@ const main = () => {
                     main();
                 }
             })
-        } else if (data.options === 'Add an employee'){
+        }else if(data.options === 'Add an employee'){
             inquirer.prompt([
                 {
                     type:'input',
@@ -73,7 +73,6 @@ const main = () => {
                         choices:roles
                     }).then(data => {
                         let roleId = data.role;
-                        // INSERT INTO employee 
                         findEmployees().then(([columns]) => {
                             function getManagers(columns){
                                 if(columns.manager_id === null){
@@ -101,7 +100,7 @@ const main = () => {
                     })
                 });
             }) 
-        } else if(data.options === "Add a department"){
+        }else if(data.options === "Add a department"){
             inquirer.prompt(
                 {
                     type:'input',
@@ -118,7 +117,7 @@ const main = () => {
                     }
                 })
             })
-        } else if(data.options === 'Add a role'){
+        }else if(data.options === 'Add a role'){
             inquirer.prompt([
                 {
                     type:"input",
