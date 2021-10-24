@@ -11,8 +11,6 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the company_db database.`)
 );
-// using inquirer, ask user questions about what they want to know
-// depending on answers, have system run terminal function to show different databases or add to tables within certain databases
 
 const main = () => {
     inquirer.prompt({
@@ -31,7 +29,7 @@ const main = () => {
                 }
             })
         }else if(data.options === 'View all roles'){
-            db.query('SELECT * FROM role', (err, data) => {
+            db.query('SELECT role.id AS id, title, name AS department, salary FROM role LEFT JOIN department ON role.department_id = department.id', (err, data) => {
                 if(err){
                     throw err;
                 }else{
@@ -74,7 +72,7 @@ const main = () => {
                         name:'role',
                         choices:roles
                     }).then(data => {
-                        var roleId = data.role;
+                        let roleId = data.role;
                         // INSERT INTO employee 
                         findEmployees().then(([columns]) => {
                             function getManagers(columns){
@@ -82,8 +80,8 @@ const main = () => {
                                     return columns;
                                 };
                             };
-                            let managers = columns.filter(getManagers);
-                            let allManagers = managers.map(row => ({
+                            const managers = columns.filter(getManagers);
+                            const allManagers = managers.map(row => ({
                                 name:`${row.first_name} ${row.last_name}`,
                                 id:row.id
                             }))
@@ -103,16 +101,62 @@ const main = () => {
                     })
                 });
             }) 
-        } else if(data.choices === "Add a department"){
-            inquirer.prompt([
+        } else if(data.options === "Add a department"){
+            inquirer.prompt(
                 {
                     type:'input',
                     name:'department',
                     message:'Insert name of new department'
                 }
-            ]).then(data => {
-                db.query('INSERT INTO department ')
+            ).then(data => {
+                db.query('INSERT INTO department (name) VALUES (?)', [data.department], (err, data) => {
+                    if(err){
+                        throw err;
+                    }else{
+                        console.log("Department added");
+                        main();
+                    }
+                })
             })
+        } else if(data.options === 'Add a role'){
+            inquirer.prompt([
+                {
+                    type:"input",
+                    name:"role",
+                    message:"What is the name of the role?"
+                },
+                {
+                    type:"number",
+                    name:"salary",
+                    message:"What is the salary of the role?"
+                }
+            ]).then(data => {
+                let role = data.role;
+                let salary = data.salary;
+                findDepartment().then(([rows]) => {
+                    const departments = rows.map(row => ({
+                        name:row.name,
+                        id:row.id
+                    }));
+                    inquirer.prompt({
+                        type:"list",
+                        name:"department_name",
+                        message:"Which department does the role belong to?",
+                        choices:departments
+                    }).then(data => {
+                        db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${role}',${salary},(SELECT id FROM department WHERE name='${data.department_name}'))`, (err, data) => {
+                            if(err){
+                                throw err;
+                            }else{
+                                console.log("Role added");
+                                main();
+                            }
+                        })
+                    })
+                })
+            })
+        }else if(data.options === "Update an employee"){
+            
         }
         else{
             console.log('Goodbye!');
@@ -120,8 +164,6 @@ const main = () => {
         }
     }))
 }
-
-
 
 const findRoles = () => {
     return db.promise().query('SELECT * FROM role')
