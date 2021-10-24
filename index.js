@@ -75,8 +75,32 @@ const main = () => {
                         choices:roles
                     }).then((data => {
                         var roleId = data.role;
-                        console.log(data);
-                        // INSERT INTO employee WHERE employee.role_id = role.title
+                        // INSERT INTO employee 
+                        findEmployees().then(([columns]) => {
+                            function getManagers(columns){
+                                if(columns.manager_id === null){
+                                    return columns;
+                                };
+                            };
+                            let managers = columns.filter(getManagers);
+                            let allManagers = managers.map(row => ({
+                                name:`${row.first_name} ${row.last_name}`,
+                                id:row.id
+                            }))
+                            console.log(allManagers);
+                            inquirer.prompt({
+                                type:'list',
+                                message:'Choose a manager to assign to',
+                                name:'manager',
+                                choices:allManagers
+                            }).then(data => {
+                                console.log(data);
+                                console.log(roleId);
+                                console.log(firstName);
+                                console.log(lastName);
+                                main();
+                            });
+                        })
                     }))
                 });
             })
@@ -88,6 +112,8 @@ const main = () => {
         }
     }))
 }
+
+
 
 const findRoles = () => {
     return db.promise().query('SELECT * FROM role')
