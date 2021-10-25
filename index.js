@@ -88,13 +88,32 @@ const main = () => {
                                 type:'list',
                                 message:'Choose a manager to assign to',
                                 name:'manager',
-                                choices:allManagers
+                                choices:[...allManagers, 'None']
                             }).then(data => {
-                                console.log(data);
-                                console.log(roleId);
-                                console.log(firstName);
-                                console.log(lastName);
-                                main();
+                                if(data.manager==='None'){
+                                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}','${lastName}',(SELECT id FROM role WHERE title='${roleId}'), NULL)`, (err, data) => {
+                                        if(err){
+                                            throw err;
+                                        }else{
+                                            console.log("Manager added");
+                                            main();
+                                        }
+                                    })
+                                }else{
+                                    const managerId = allManagers.filter(function(manager){
+                                        if(manager.name === data.manager){
+                                            return manager.id;
+                                        }
+                                    })[0];
+                                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}','${lastName}',(SELECT id FROM role WHERE title='${roleId}'), ${managerId.id})`, (err, data) => {
+                                        if(err){
+                                            throw err;
+                                        }else{
+                                            console.log("Employee added");
+                                            main();
+                                        }
+                                    })
+                                }
                             });
                         })
                     })
@@ -155,6 +174,7 @@ const main = () => {
                 })
             })
         }else if(data.options === "Update an employee"){
+            // TODO: create inquirer + functions to change an employee's data
             
         }
         else{
