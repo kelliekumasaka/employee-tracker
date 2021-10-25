@@ -38,7 +38,7 @@ const main = () => {
                 }
             })
         }else if(data.options === 'View all employees'){
-            db.query('SELECT e.id, e.first_name, e.last_name, title, name AS department, salary, concat(m.first_name, " ", m.last_name) AS manager FROM employee e JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee m ON m.id = e.manager_id', (err, data) => {
+            db.query('SELECT e.id, e.first_name, e.last_name, title, name AS department, salary, concat(m.first_name, " ", m.last_name) AS manager FROM employee e LEFT JOIN role ON e.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee m ON m.id = e.manager_id', (err, data) => {
                 if(err){
                     throw err;
                 }else{
