@@ -79,16 +79,15 @@ const main = () => {
                                     return columns;
                                 };
                             };
-                            const managers = columns.filter(getManagers);
-                            const allManagers = managers.map(row => ({
+                            const managers = columns.filter(getManagers).map(row => ({
                                 name:`${row.first_name} ${row.last_name}`,
                                 id:row.id
-                            }))
+                            }));
                             inquirer.prompt({
                                 type:'list',
                                 message:'Choose a manager to assign to',
                                 name:'manager',
-                                choices:[...allManagers, 'None']
+                                choices:[...managers, 'None']
                             }).then(data => {
                                 if(data.manager==='None'){
                                     db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}','${lastName}',(SELECT id FROM role WHERE title='${roleId}'), NULL)`, (err, data) => {
@@ -100,7 +99,7 @@ const main = () => {
                                         }
                                     })
                                 }else{
-                                    const managerId = allManagers.filter(function(manager){
+                                    const managerId = managers.filter(function(manager){
                                         if(manager.name === data.manager){
                                             return manager.id;
                                         }
@@ -114,10 +113,10 @@ const main = () => {
                                         }
                                     })
                                 }
-                            });
+                            })
                         })
                     })
-                });
+                })
             }) 
         }else if(data.options === "Add a department"){
             inquirer.prompt(
@@ -175,7 +174,7 @@ const main = () => {
             })
         }else if(data.options === "Update an employee"){
             // TODO: create inquirer + functions to change an employee's data
-            
+
         }
         else{
             console.log('Goodbye!');
