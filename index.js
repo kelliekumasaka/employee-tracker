@@ -117,7 +117,7 @@ const main = () => {
                         })
                     })
                 })
-            }) 
+            })
         }else if(data.options === "Add a department"){
             inquirer.prompt(
                 {
@@ -126,7 +126,7 @@ const main = () => {
                     message:'Insert name of new department'
                 }
             ).then(data => {
-                db.query('INSERT INTO department (name) VALUES (?)', [data.department], (err, data) => {
+                db.query('INSERT INTO department (name) VALUES (?)', data.department, (err, data) => {
                     if(err){
                         throw err;
                     }else{
@@ -173,10 +173,52 @@ const main = () => {
                 })
             })
         }else if(data.options === "Update an employee"){
-            // TODO: create inquirer + functions to change an employee's data
-
-        }
-        else{
+            findEmployees().then(([rows]) => {
+                const employees = rows.map(row => ({
+                    name:`${row.first_name} ${row.last_name}`,
+                    id:row.id
+                }));
+                inquirer.prompt({
+                    type:'list',
+                    name:"employeeName",
+                    message:"Which employee would you like to update?",
+                    choices:employees
+                }).then(data => {
+                    // find employee id using employeeName
+                    const employeeId = employees.filter(function(employee){
+                        if(employee.name === data.employeeName){
+                            return employee.id;
+                        }
+                    })[0];
+                    findRoles().then(([rows]) => {
+                        const roles = rows.map(row => ({
+                            name:row.title,
+                            id:row.id
+                        }));
+                        inquirer.prompt({
+                            type:'list',
+                            name:'roleName',
+                            message:"Which role would you like to assign this employee to?",
+                            choices:roles
+                        }).then(data => {
+                            const roleId = roles.filter(function(role){
+                                if(role.name === data.roleName){
+                                    return role.id;
+                                }
+                            })[0];
+                            db.query(`UPDATE employee SET role_id = ? WHERE employee.id= ?`,[roleId.id, employeeId.id], (err, data) => {
+                                if(err){
+                                    throw err;
+                                }else{
+                                    console.log("Employee updated");
+                                    main();
+                                }
+                            })
+                        })
+                    })
+                })
+            })
+        }else{
             console.log('Goodbye!');
             db.end()
         }
