@@ -2,7 +2,7 @@
 ## Description
 This in-terminal app allows the user to create and view employees, departments, and roles within a company database. Upon running `node index.js` in terminal, the user is presented with options to view all departments, view all employees, view all roles, add a department, add a role, add an employee, update an employee or quit. Once an option is chosen, the user is then lead through a series of prompts that all the user to do any of the aforestated options. This app allows the user to keep track of their employees and internal management, as well as update them with ease.
 
-Check out the video of the application [here](https://www.youtube.com/watch?v=qZD5KqW7dcQ).
+Check out the video of the application [here](https://youtu.be/E_TKm1zDF7k).
 
 When you first run the program, you are presented with options and if you click on "View all departments" you are given a table with all the departments then brought back to the main menu options.
 
