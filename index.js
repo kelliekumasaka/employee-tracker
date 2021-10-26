@@ -167,6 +167,8 @@ function addEmployee(){
                 choices:roles
             }).then(data => {
                 let roleId = data.role;
+                const myRole = roles.filter(role => role.name === roleId)[0];
+                console.log(myRole);
                 findEmployees().then(([columns]) => {
                     function getManagers(columns){
                         if(columns.manager_id === null){
@@ -184,7 +186,7 @@ function addEmployee(){
                         choices:[...managers, 'None']
                     }).then(data => {
                         if(data.manager==='None'){
-                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}','${lastName}',(SELECT id FROM role WHERE title='${roleId}'), NULL)`, (err, data) => {
+                            db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [firstName, lastName, myRole.id, null], (err, data) => {
                                 if(err){
                                     throw err;
                                 }else{
@@ -194,7 +196,7 @@ function addEmployee(){
                             })
                         }else{
                             const managerId = managers.filter(manager => manager.name === data.manager)[0];
-                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${firstName}','${lastName}',(SELECT id FROM role WHERE title='${roleId}'), ${managerId.id})`, (err, data) => {
+                            db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [firstName, lastName, myRole.id, managerId.id], (err, data) => {
                                 if(err){
                                     throw err;
                                 }else{
@@ -255,7 +257,8 @@ function addRole(){
                 message:"Which department does the role belong to?",
                 choices:departments
             }).then(data => {
-                db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${role}',${salary},(SELECT id FROM department WHERE name='${data.department_name}'))`, (err, data) => {
+                const myDepartment = departments.filter(department => data.department_name === department.name)[0];
+                db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)', [role, salary, myDepartment.id], (err, data) => {
                     if(err){
                         throw err;
                     }else{
@@ -293,7 +296,7 @@ function updateRole(){
                     choices:roles
                 }).then(data => {
                     const roleId = roles.filter(role => role.name === data.roleName)[0];
-                    db.query(`UPDATE employee SET role_id = ? WHERE employee.id= ?`,[roleId.id, employeeId.id], (err, data) => {
+                    db.query('UPDATE employee SET role_id = ? WHERE employee.id= ?', [roleId.id, employeeId.id], (err, data) => {
                         if(err){
                             throw err;
                         }else{
@@ -338,7 +341,7 @@ function updateManager(){
                 }).then(data => {
                     const myManager = managers.filter(manager => manager.name === data.manager)[0];
                     if(data.manager === 'None' || myManager.id === employeeId.id){
-                        db.query('UPDATE employee SET manager_id = NULL WHERE id = ?', employeeId.id, (err,data) => {
+                        db.query('UPDATE employee SET manager_id = ? WHERE id = ?', [null, employeeId.id], (err,data) => {
                             if(err){
                                 throw err
                             }else{
