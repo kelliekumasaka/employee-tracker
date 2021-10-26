@@ -84,7 +84,7 @@ INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES
     "Donald",
     "Evans",
     4,
-    NULL
+    1
 ),
 (
     "Emily",
